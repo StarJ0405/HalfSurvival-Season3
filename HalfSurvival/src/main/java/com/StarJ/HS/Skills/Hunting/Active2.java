@@ -5,18 +5,20 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
+import org.bukkit.Particle.DustOptions;
 import org.bukkit.Sound;
 import org.bukkit.entity.AbstractArrow.PickupStatus;
-import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ItemDisplay;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -101,6 +103,19 @@ public class Active2 extends UsableSkill {
 	@Override
 	public boolean use(Player player) {
 		if (hasDuration(player) && HashMapStore.isNotDelayed(player)) {
+			if (!HashMapStore.isAngryStatus(player) && Skill.Hunting.transform_left2.confirmChance(player)) {
+				int angry = Skill.Hunting.getAngry(player);
+				int max = Skill.Hunting.getMaxAngry(player);
+				angry += 1;
+				if (angry > max)
+					angry = max;
+				Skill.Hunting.setAngry(player, angry);
+				player.sendMessage(Skill.Hunting.transform_left2.getDisplayName() + ChatColor.WHITE + " 발동 "
+						+ ChatColor.RED + angry + " / " + max);
+				player.playSound(player, Sound.ENTITY_PLAYER_HURT_ON_FIRE, 2f, 2f);
+				player.spawnParticle(Particle.REDSTONE, player.getEyeLocation(), 10, 0.5, 0.5, 0.5,
+						new DustOptions(Color.RED, 1));
+			}
 			HashMapStore.setDelay(player);
 			ItemStack off = player.getInventory().getItemInOffHand();
 			WeaponType type = WeaponType.getWeaponType(off);
@@ -182,6 +197,19 @@ public class Active2 extends UsableSkill {
 			player.getInventory().setItemInOffHand(player.getInventory().getItemInMainHand());
 			player.getInventory().setItemInMainHand(off);
 		} else if (super.use(player)) {
+			if (!HashMapStore.isAngryStatus(player) && Skill.Hunting.transform_left2.confirmChance(player)) {
+				int angry = Skill.Hunting.getAngry(player);
+				int max = Skill.Hunting.getMaxAngry(player);
+				angry += 1;
+				if (angry > max)
+					angry = max;
+				Skill.Hunting.setAngry(player, angry);
+				player.sendMessage(Skill.Hunting.transform_left2.getDisplayName() + ChatColor.WHITE + " 발동 "
+						+ ChatColor.RED + angry + " / " + max);
+				player.playSound(player, Sound.ENTITY_PLAYER_HURT_ON_FIRE, 2f, 2f);
+				player.spawnParticle(Particle.REDSTONE, player.getEyeLocation(), 10, 0.5, 0.5, 0.5,
+						new DustOptions(Color.RED, 1));
+			}
 			ItemStack off = player.getInventory().getItemInOffHand();
 			WeaponType type = WeaponType.getWeaponType(off);
 			long duration = getDuration(player);
@@ -211,6 +239,7 @@ public class Active2 extends UsableSkill {
 				arrow.setMetadata("no_player", new FixedMetadataValue(Core.getCore(), true));
 				arrow.setMetadata("no_delay", new FixedMetadataValue(Core.getCore(), true));
 				arrow.setMetadata("movePassenger", new FixedMetadataValue(Core.getCore(), true));
+				arrow.setMetadata("damage", new FixedMetadataValue(Core.getCore(), 0));
 				Bukkit.getScheduler().runTaskLater(Core.getCore(), () -> {
 					if (itemDisplay != null)
 						itemDisplay.remove();

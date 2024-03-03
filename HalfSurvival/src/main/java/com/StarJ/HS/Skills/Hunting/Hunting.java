@@ -15,6 +15,7 @@ import com.StarJ.HS.Skills.Skill.Type;
 import com.StarJ.HS.Skills.SkillTree;
 import com.StarJ.HS.Skills.UsableSkill;
 import com.StarJ.HS.Skills.UsableSkill.useSlot;
+import com.StarJ.HS.Systems.ConfigStore;
 import com.StarJ.HS.Systems.SkillType;
 
 public class Hunting {
@@ -31,7 +32,8 @@ public class Hunting {
 					ChatColor.GRAY + "성공 횟수당 +1개씩 최대 3개 블럭 지급" },
 			new String[0], new Skill[] { upgrade1 }, new Need[0], new Skill[0], new String[0], new double[] { 0.05d });
 	//
-	public final Active2 active2 = new Active2("hunting_active2", "연계기", new Skill[] { upgrade1 }, 6, 3, useSlot.right);
+	public final Active2 active2 = new Active2("hunting_active2", "연계기", new Skill[] { upgrade1 }, 3, 1.5,
+			useSlot.right);
 	public final Active3 active3 = new Active3("hunting_active3", "기본기", new Skill[] { upgrade1 }, 1,
 			useSlot.shiftRight);
 	public final Active4 active4 = new Active4("hunting_active4", "강화기", new Skill[] { upgrade1 }, 1, 100,
@@ -43,11 +45,11 @@ public class Hunting {
 			new double[] { 5, 20 });
 	//
 	public final Skill transform_left2 = new Skill(SkillType.hunting, "hunting_transform_left2", Type.Transform,
-			"행운의 기회",
-			new String[] {
-					ChatColor.WHITE + "곡괭이로 관련 블럭 파괴시 20% 확률로 " + active2.getDisplayName() + ChatColor.WHITE + " 발동" },
+			"작은 분노",
+			new String[] { active2.getDisplayName() + ChatColor.WHITE + " 발동시 25% 확률로 분노가 1스택 쌓입니다.",
+					ChatColor.WHITE + "최대 스택시 피해를 입히면 5초동안 피해를 1.5배로 입힙니다.", ChatColor.RED + "최대 5스택" },
 			new String[] { SkillType.hunting.leftSkillType }, new Skill[] { passive }, new Need[0],
-			new Skill[] { active2 }, new String[0], new double[] { 0.2d });
+			new Skill[] { active2 }, new String[0], new double[] { 0.25d }, new double[] { 10, 5, 1.5 });
 	public final Skill transform_middle3 = new Skill(SkillType.hunting, "hunting_transform_middle3", Type.Transform,
 			"위치 파악", new String[] { ChatColor.WHITE + "탐색한 광물의 정확한 위치를 10초간 파악할 수 있습니다." },
 			new String[] { SkillType.hunting.middleSkillType }, new Skill[] { passive }, new Need[0],
@@ -58,9 +60,9 @@ public class Hunting {
 			new Skill[] { active4 }, new String[0]);
 	//
 	public final Skill upgrade_left2_1 = new Skill(SkillType.hunting, "hunting_upgrade_left2_1", Type.Upgrade,
-			ChatColor.WHITE + "파워업", new String[] { ChatColor.WHITE + "파워스트라이크 발동시 범위가 정면으로 3배 늘어납니다." },
+			ChatColor.WHITE + "강한 분노", new String[] { ChatColor.WHITE + "분노 발동시 피해량이 1.5배에서 3배로 변경됩니다." },
 			new String[] { SkillType.hunting.leftSkillType }, new Skill[] { transform_left2 }, new Need[0],
-			new Skill[0], new String[0], new double[0], new double[] { 3 });
+			new Skill[0], new String[0], new double[0], new double[] { 2 });
 	public final Skill upgrade_middle3_1 = new Skill(SkillType.hunting, "hunting_upgrade_middle3_1", Type.Upgrade,
 			"정밀 탐색",
 			new String[] { ChatColor.WHITE + "탐색한 광물의 종류를 색깔로 구분 가능합니다.",
@@ -74,11 +76,10 @@ public class Hunting {
 			new String[] { SkillType.hunting.rightSkillType }, new Skill[] { transform_right4 }, new Need[0],
 			new Skill[0], new String[0], new double[] { 1d, 0.25d }, new double[] { 1 });
 	//
-	public final Skill passive_left1 = new Skill(SkillType.hunting, "hunting_passive_left1", Type.Passive, "추가 획득",
-			new String[] { ChatColor.WHITE + "광물 파괴시 20% 확률로 아이템 1번 더 드랍" },
+	public final Skill passive_left1 = new Skill(SkillType.hunting, "hunting_passive_left1", Type.Passive, "잦은 분노",
+			new String[] { ChatColor.WHITE + "공격시 20% 확률로 분노를 1스택 증가시킵니다." },
 			new String[] { SkillType.hunting.leftSkillType }, new Skill[] { upgrade_left2_1 }, new Need[0],
-			new Skill[0], new String[] { "passive_middle1", "passive_right1" }, new double[] { 0.2d },
-			new double[] { 1 });
+			new Skill[0], new String[] { "passive_middle1", "passive_right1" }, new double[] { 0.2d });
 	public final Skill passive_middle1 = new Skill(SkillType.hunting, "hunting_passive_middle1", Type.Passive, "환경 저항",
 			new String[] { ChatColor.WHITE + "블럭 파괴시 25% 확률로 2분동안 야간투시와 전달체의 힘 및 화염저항을 얻습니다." },
 			new String[] { SkillType.hunting.middleSkillType }, new Skill[] { upgrade_middle3_1 }, new Need[0],
@@ -89,10 +90,10 @@ public class Hunting {
 			new String[] { SkillType.hunting.rightSkillType }, new Skill[] { upgrade_right4_1 }, new Need[0],
 			new Skill[0], new String[] { "passive_left1", "passive_middle1" }, new double[] { 0.2d });
 	//
-	public final Skill passive_left2 = new Skill(SkillType.hunting, "hunting_passive_left2", Type.Passive, "또 한번의 기회",
-			new String[] { ChatColor.WHITE + "20% 확률로 광물을 다시 한번 캘 수 있습니다." },
+	public final Skill passive_left2 = new Skill(SkillType.hunting, "hunting_passive_left2", Type.Passive, "덜 풀린 분노",
+			new String[] { ChatColor.WHITE + "분노 발동시 20% 확률로 분노 게이지의 절반을 돌려받습니다." },
 			new String[] { SkillType.hunting.leftSkillType }, new Skill[] { upgrade_left2_1 }, new Need[0],
-			new Skill[0], new String[0], new double[] { 0.2d });
+			new Skill[0], new String[0], new double[] { 0.2d }, new double[] { 0.5d });
 	public final Skill passive_middle2 = new Skill(SkillType.hunting, "hunting_passive_middle2", Type.Passive,
 			"신속한 움직임", new String[] { ChatColor.WHITE + "블럭 파괴시 25% 확률로 2분동안 이동속도와 점프력이 증가합니다." },
 			new String[] { SkillType.hunting.middleSkillType }, new Skill[] { upgrade_middle3_1 }, new Need[0],
@@ -314,5 +315,30 @@ public class Hunting {
 
 	public void setAbsorption(Player player, double value) {
 		player.setAbsorptionAmount(value);
+	}
+
+	public int getAngry(Player player) {
+		Integer angryl = ConfigStore.getPlayerConfig(player, "hunting.skills.angry");
+		return angryl != null ? angryl : 0;
+	}
+
+	public int getMaxAngry(Player player) {
+		int angry = 0;
+		if (transform_left2.hasLearn(player))
+			angry += transform_left2.getEffect();
+		return angry;
+	}
+
+	public void setAngry(Player player, int angry) {
+		ConfigStore.setPlayerConfig(player, "hunting.skills.angry", angry);
+	}
+
+	public double getAngryMultiply(Player player) {
+		double multiply = 1d;
+		if (transform_left2.hasLearn(player))
+			multiply *= transform_left2.getEffect(2);
+		if (upgrade_left2_1.hasLearn(player))
+			multiply *= upgrade_left2_1.getEffect();
+		return multiply;
 	}
 }

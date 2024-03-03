@@ -5,6 +5,10 @@ main: com.StarJ.HS.Core
 api-version: 1.20
 
 commands:
+  text:
+    description: "채팅 소환 명령어"
+    usage : "/text <world> <x> <y> <z> <size> <내용>"
+    operator : admin
   movetonetural:
     description: "야생으로 이동하는 명령어"
     usage : "/mtn"

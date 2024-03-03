@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.advancement.Advancement;
@@ -37,6 +38,7 @@ public class HashMapStore {
 	private static HashMap<UUID, LocationTask> change_portal = new HashMap<UUID, LocationTask>();
 	private static HashMap<UUID, ItemDisplay> active2 = new HashMap<UUID, ItemDisplay>();
 	private static HashMap<UUID, BukkitTask> active4 = new HashMap<UUID, BukkitTask>();
+	private static HashMap<UUID, BukkitTask> angryStatus = new HashMap<UUID, BukkitTask>();
 
 	public static boolean isSpanwable() {
 		return spanwable;
@@ -366,5 +368,24 @@ public class HashMapStore {
 		active4.put(uuid, Bukkit.getScheduler().runTaskLater(Core.getCore(), () -> {
 			active4.remove(uuid);
 		}, 10));
+	}
+
+	// 분노 상태
+	public static boolean isAngryStatus(Player player) {
+		UUID uuid = player.getUniqueId();
+		return angryStatus.containsKey(uuid) ? !angryStatus.get(uuid).isCancelled() : false;
+	}
+
+	public static void setAngryStatus(Player player) {
+		UUID uuid = player.getUniqueId();
+		if (angryStatus.containsKey(uuid))
+			angryStatus.get(uuid).cancel();
+		player.sendMessage(ChatColor.DARK_RED + "분노 모드 ON " + ChatColor.GREEN + "피해량 : "
+				+ String.format("%.1f", Skill.Hunting.getAngryMultiply(player)) + "배");
+		angryStatus.put(uuid, Bukkit.getScheduler().runTaskLater(Core.getCore(), () -> {
+			angryStatus.remove(uuid);
+			if (player.isOnline())
+				player.sendMessage(ChatColor.RED + "분노 모드 OFF");
+		}, (long) Skill.Hunting.transform_left2.getEffect(1) * 20));
 	}
 }

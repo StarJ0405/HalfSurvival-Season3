@@ -4,8 +4,10 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
+import org.bukkit.Particle.DustOptions;
 import org.bukkit.Sound;
 import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Entity;
@@ -169,6 +171,32 @@ public class EntityListener implements Listener {
 					contents[i] = item;
 				}
 			}
+			int max = Skill.Hunting.getMaxAngry(att);
+			if (max > 0) {
+				int angry = Skill.Hunting.getAngry(att);
+				if (!HashMapStore.isAngryStatus(att) && Skill.Hunting.passive_left1.confirmChance(att)) {
+					angry += 1;
+					att.sendMessage(Skill.Hunting.passive_left1.getDisplayName() + ChatColor.WHITE + " 발동 "
+							+ ChatColor.RED + angry + " / " + max);
+					att.playSound(att, Sound.ENTITY_PLAYER_HURT_ON_FIRE, 2f, 2f);
+					att.spawnParticle(Particle.REDSTONE, att.getEyeLocation(), 10, 0.5, 0.5, 0.5,
+							new DustOptions(Color.RED, 1));
+					if (angry >= max)
+						angry = max;
+					else
+						Skill.Hunting.setAngry(att, angry);
+				}
+				if (angry == max) {
+					if (Skill.Hunting.passive_left2.confirmChance(att)) {
+						Skill.Hunting.setAngry(att, (int) (max * Skill.Hunting.passive_left2.getEffect()));
+						att.sendMessage(Skill.Hunting.passive_left2.getDisplayName() + ChatColor.WHITE + " 발동");
+					} else
+						Skill.Hunting.setAngry(att, 0);
+					HashMapStore.setAngryStatus(att);
+				}
+			}
+			if (HashMapStore.isAngryStatus(att))
+				e.setDamage(e.getDamage() * Skill.Hunting.getAngryMultiply(att));
 			if (e.getCause().equals(DamageCause.ENTITY_ATTACK) && etVic instanceof LivingEntity
 					&& !HashMapStore.isActive4Delay(att) && Skill.Hunting.active4.hasDuration(att)) {
 				ItemStack weapon = att.getInventory().getItemInMainHand();
@@ -286,6 +314,7 @@ public class EntityListener implements Listener {
 							player.getAbsorptionAmount() + Skill.Hunting.passive.getEffect(1));
 					player.getWorld().spawnParticle(Particle.SONIC_BOOM, player.getEyeLocation(), 1, 0, 0, 0);
 					player.getWorld().playSound(player.getEyeLocation(), Sound.ITEM_SHIELD_BLOCK, 1f, 1f);
+					player.sendMessage(Skill.Hunting.passive.getDisplayName() + ChatColor.WHITE + " 발동");
 				}
 			}
 			player.getInventory().setContents(contents);

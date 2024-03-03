@@ -34,6 +34,7 @@ import com.StarJ.HS.Commands.SkillCommand;
 import com.StarJ.HS.Commands.SpawnCommand;
 import com.StarJ.HS.Commands.SudoCommand;
 import com.StarJ.HS.Commands.TestCommand;
+import com.StarJ.HS.Commands.TextCommand;
 import com.StarJ.HS.Commands.moveToNeturalCommand;
 import com.StarJ.HS.Entities.Pets.CatPet;
 import com.StarJ.HS.Entities.Pets.DogPet;
@@ -79,6 +80,7 @@ public class Core extends JavaPlugin {
 		getCommand("spawn").setExecutor(new SpawnCommand());
 		getCommand("sudo").setExecutor(new SudoCommand());
 		getCommand("test").setExecutor(new TestCommand());
+		getCommand("text").setExecutor(new TextCommand());
 		//
 		initial();
 		//

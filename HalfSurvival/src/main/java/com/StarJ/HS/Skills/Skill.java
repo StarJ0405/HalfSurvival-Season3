@@ -394,10 +394,10 @@ public class Skill {
 
 	public void damage(Player att, LivingEntity vic, double damage) {
 		if (vic != null) {
-			int tick = vic.getNoActionTicks();
+			int tick = vic.getNoDamageTicks();
 			vic.setNoDamageTicks(10);
 			vic.damage(damage, att);
-			vic.setTicksLived(tick);
+			vic.setNoDamageTicks(tick);
 		}
 	}
 
