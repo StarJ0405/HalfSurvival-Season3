@@ -452,9 +452,10 @@ public class Active3 extends UsableSkill {
 			if (upgrade_middle3_1)
 				display.setGlowColorOverride(color);
 			display.setBillboard(Billboard.FIXED);
-			long life = (long) (Skill.Mining.transform_middle3.getEffect() * 1000l);
-			ConfigStore.setEntityConfig(display, "type", "Find");
-			ConfigStore.setEntityConfig(display, "life", System.currentTimeMillis() + life);
+			Bukkit.getScheduler().runTaskLater(Core.getCore(), () -> {
+				if (display != null && !display.isDead())
+					display.remove();
+			}, (int) Skill.Mining.transform_middle3.getEffect() * 20);
 		}
 	}
 }

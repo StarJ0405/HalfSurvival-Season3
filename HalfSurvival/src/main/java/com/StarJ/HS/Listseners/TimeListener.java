@@ -46,15 +46,7 @@ public class TimeListener implements Listener {
 						Bukkit.broadcastMessage("night");
 						confirmWeather(world);
 					}
-					for (Entity et : world.getEntities())
-						if (ConfigStore.hasEntityConfig(et, "life")) {
-							Long remainL = ConfigStore.<Long>getEntityConfig(et, "life");
-							long remain = (remainL != null ? remainL : 0) - System.currentTimeMillis();
-							if (remain <= 0) {
-								ConfigStore.removeEntityConfig(et);
-								et.remove();
-							}
-						}
+//					for (Entity et : world.getEntities())
 				} else
 					block.setType(Material.BEDROCK, true);
 			}
