@@ -126,6 +126,7 @@ public class PlayerListener implements Listener {
 				ConfigStore.setPlayerPet(player, livingEntity);
 			}
 		}
+		Skill.Hunting.setMaxAbsorption(player);
 	}
 
 	@EventHandler
@@ -538,7 +539,10 @@ public class PlayerListener implements Listener {
 			if (block != null && block.getType().equals(Material.FARMLAND))
 				e.setCancelled(true);
 		} else {
-			if (block != null && block.getType().equals(Material.NETHER_PORTAL)) {
+			if (block != null && block.getType().name().contains("TRAPDOOR")
+					&& block.getLocation().clone().subtract(0, 1, 0).getBlock().getType().name().contains("LANTERN"))
+				e.setCancelled(true);
+			else if (block != null && block.getType().equals(Material.NETHER_PORTAL)) {
 				if (player.getGameMode().equals(GameMode.CREATIVE) && e.getAction().equals(Action.LEFT_CLICK_BLOCK))
 					return;
 				e.setCancelled(true);
@@ -668,6 +672,7 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void Events(PlayerDeathEvent e) {
 		Player player = e.getEntity();
+		player.setAbsorptionAmount(0);
 		switch (player.getGameMode()) {
 		case CREATIVE:
 		case SPECTATOR:

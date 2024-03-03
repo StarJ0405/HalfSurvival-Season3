@@ -186,7 +186,7 @@ public enum GUIs {
 						break;
 					default:
 						Skill skill = Skill.valueOf(current);
-						if (skill != null)
+						if (skill != null) {
 							if (skill.canLearn(player) == 0
 									&& (clickType.equals(ClickType.LEFT) || clickType.equals(ClickType.SHIFT_LEFT)))
 								skill.setLearn(player, true);
@@ -197,6 +197,9 @@ public enum GUIs {
 								inv.setContents(getContents(player, true));
 								return false;
 							}
+							if (type.equals(SkillType.hunting))
+								Skill.Hunting.setMaxAbsorption(player);
+						}
 						break;
 					}
 					Inventory inv = view.getTopInventory();

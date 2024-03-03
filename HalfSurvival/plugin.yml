@@ -5,6 +5,11 @@ main: com.StarJ.HS.Core
 api-version: 1.20
 
 commands:
+  movetonetural:
+    description: "야생으로 이동하는 명령어"
+    usage : "/mtn"
+    aliases: [mtn]
+    operator : admin
   mypet:
     description: "펫 GUI 명령어"
     usage : "/mypet"

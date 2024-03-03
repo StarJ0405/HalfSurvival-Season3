@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import com.StarJ.HS.Skills.Skill;
@@ -32,13 +34,13 @@ public class Hunting {
 	public final Active2 active2 = new Active2("hunting_active2", "연계기", new Skill[] { upgrade1 }, 6, 3, useSlot.right);
 	public final Active3 active3 = new Active3("hunting_active3", "기본기", new Skill[] { upgrade1 }, 1,
 			useSlot.shiftRight);
-	public final Active4 active4 = new Active4("hunting_active4", "강화기", new Skill[] { upgrade1 }, 1,100,
+	public final Active4 active4 = new Active4("hunting_active4", "강화기", new Skill[] { upgrade1 }, 1, 100,
 			useSlot.shiftLeft);
 	//
-	public final Skill passive = new Skill(SkillType.hunting, "hunting_passive1", Type.Passive, "자동 수리",
-			new String[] { ChatColor.WHITE + "5% 확률로 내구도를 10 회복합니다." }, new String[0],
-			new Skill[] { active2, active3, active4 }, new Need[0], new Skill[0], new String[0], new double[] { 0.05d },
-			new double[] { 11 });
+	public final Skill passive = new Skill(SkillType.hunting, "hunting_passive1", Type.Passive, "자동 보호",
+			new String[] { ChatColor.WHITE + "피격시 5초에 한번 보호막이 20 들어옵니다." }, new String[0],
+			new Skill[] { active2, active3, active4 }, new Need[0], new Skill[0], new String[0], new double[0],
+			new double[] { 5, 20 });
 	//
 	public final Skill transform_left2 = new Skill(SkillType.hunting, "hunting_transform_left2", Type.Transform,
 			"행운의 기회",
@@ -301,5 +303,16 @@ public class Hunting {
 					return weaponType;
 			return null;
 		}
+	}
+
+	public void setMaxAbsorption(Player player) {
+		double value = 0;
+		if (passive.hasLearn(player))
+			value += passive.getEffect(1);
+		player.getAttribute(Attribute.GENERIC_MAX_ABSORPTION).setBaseValue(value);
+	}
+
+	public void setAbsorption(Player player, double value) {
+		player.setAbsorptionAmount(value);
 	}
 }

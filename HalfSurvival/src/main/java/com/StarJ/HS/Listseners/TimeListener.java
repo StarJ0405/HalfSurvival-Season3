@@ -7,7 +7,6 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Furnace;
-import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.FurnaceBurnEvent;
@@ -16,7 +15,6 @@ import org.bukkit.inventory.ItemStack;
 
 import com.StarJ.HS.Core;
 import com.StarJ.HS.Items.Items;
-import com.StarJ.HS.Systems.ConfigStore;
 
 public class TimeListener implements Listener {
 

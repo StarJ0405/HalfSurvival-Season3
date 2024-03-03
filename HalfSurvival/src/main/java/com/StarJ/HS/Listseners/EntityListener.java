@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -271,6 +272,20 @@ public class EntityListener implements Listener {
 					meta.removeEnchantments();
 					item.setItemMeta(meta);
 					contents[i] = item;
+				}
+			}
+			if (Skill.Hunting.passive.confirmChance(player)) {
+				long last = 0l;
+				if (player.hasMetadata("passive"))
+					for (MetadataValue value : player.getMetadata("passive"))
+						if (value.getOwningPlugin().equals(Core.getCore()))
+							last = value.asLong();
+				if (System.currentTimeMillis() - last >= Skill.Hunting.passive.getEffect(0) * 1000l) {
+					player.setMetadata("passive", new FixedMetadataValue(Core.getCore(), System.currentTimeMillis()));
+					Skill.Hunting.setAbsorption(player,
+							player.getAbsorptionAmount() + Skill.Hunting.passive.getEffect(1));
+					player.getWorld().spawnParticle(Particle.SONIC_BOOM, player.getEyeLocation(), 1, 0, 0, 0);
+					player.getWorld().playSound(player.getEyeLocation(), Sound.ITEM_SHIELD_BLOCK, 1f, 1f);
 				}
 			}
 			player.getInventory().setContents(contents);

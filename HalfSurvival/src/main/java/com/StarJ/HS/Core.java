@@ -34,6 +34,7 @@ import com.StarJ.HS.Commands.SkillCommand;
 import com.StarJ.HS.Commands.SpawnCommand;
 import com.StarJ.HS.Commands.SudoCommand;
 import com.StarJ.HS.Commands.TestCommand;
+import com.StarJ.HS.Commands.moveToNeturalCommand;
 import com.StarJ.HS.Entities.Pets.CatPet;
 import com.StarJ.HS.Entities.Pets.DogPet;
 import com.StarJ.HS.Entities.Pets.Pets;
@@ -73,6 +74,7 @@ public class Core extends JavaPlugin {
 		getCommand("item").setExecutor(new ItemCommand());
 		getCommand("mypet").setExecutor(new MyPetCommand());
 		getCommand("money").setExecutor(new MoneyCommand());
+		getCommand("movetonetural").setExecutor(new moveToNeturalCommand());
 		getCommand("skill").setExecutor(new SkillCommand());
 		getCommand("spawn").setExecutor(new SpawnCommand());
 		getCommand("sudo").setExecutor(new SudoCommand());
@@ -178,6 +180,7 @@ public class Core extends JavaPlugin {
 					ConfigStore.setPlayerPet(player, livingEntity);
 				}
 			}
+			Skill.Hunting.setMaxAbsorption(player);
 		}
 		ConfigStore.confirmBlockConfig();
 		ConfigStore.confirmPortals();
