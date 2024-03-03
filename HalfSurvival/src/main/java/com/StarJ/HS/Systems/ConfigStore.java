@@ -1,8 +1,10 @@
 package com.StarJ.HS.Systems;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -22,6 +24,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import com.StarJ.HS.Core;
 import com.StarJ.HS.Entities.Entities;
 import com.StarJ.HS.Entities.Pets.Pets;
 
@@ -603,6 +606,75 @@ public class ConfigStore {
 			fc.save(file);
 		} catch (Exception ex) {
 		}
+	}
+
+	public static Location getRandomLocation() {
+		File file = new File("plugins/HalfSurvival/locations.yml");
+		File dir = new File("plugins/HalfSurvival/");
+		FileConfiguration fc = new YamlConfiguration();
+		World world = Bukkit.getWorlds().get(0);
+		try {
+			if (!file.exists()) {
+				dir.mkdirs();
+				file.createNewFile();
+			}
+			fc.load(file);
+			if (!fc.isConfigurationSection("locations")) {
+				ConfigurationSection cs = fc.createSection("locations");
+				for (int i = 0; i < 50; i++)
+					setRandomLocation(file, fc, cs, i, world);
+				return world.getSpawnLocation();
+			}
+
+			if (!fc.isInt("number"))
+				fc.set("number", 0);
+			int number = fc.getInt("number");
+			ConfigurationSection cs = fc.getConfigurationSection("locations");
+			if (cs.isLocation(number + "")) {
+				setRandomLocation(file, fc, cs, number, world);
+				return cs.getLocation(number + "");
+			}
+		} catch (Exception ex) {
+		}
+		return world.getSpawnLocation();
+	}
+
+	public static void setRandomLocation(File file, FileConfiguration fc, ConfigurationSection cs, int number,
+			World world) {
+		Bukkit.getScheduler().runTaskLater(Core.getCore(), () -> {
+			try {
+				Location loc = getRandom(world);
+				if (loc == null) {
+					setRandomLocation(file, fc, cs, number, world);
+					return;
+				}
+				cs.set(number + "", loc);
+				fc.set("number", (number + 1) % 10);
+				fc.save(file);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}, 3);
+	}
+
+	private static Location getRandom(World world) {
+		// -29999984 ~ 29999983
+		Random r = new Random();
+		int x = -29999984 + r.nextInt(59999968);
+		int y = 200;
+		int z = -29999984 + r.nextInt(59999968);
+
+		Location loc = new Location(world, x, y, z);
+		while (!(loc.getBlock().getType().equals(Material.AIR)
+				&& loc.clone().add(0, 1, 0).getBlock().getType().equals(Material.AIR)
+				&& (!loc.clone().add(0, -1, 0).getBlock().getType().equals(Material.AIR)
+						&& !loc.clone().add(0, -1, 0).getBlock().getType().equals(Material.WATER)))) {
+			loc.subtract(0, 1, 0);
+			if (loc.getY() <= 20)
+				return null;
+		}
+		return loc;
 	}
 
 }

@@ -181,6 +181,7 @@ public class Core extends JavaPlugin {
 				}
 			}
 			Skill.Hunting.setMaxAbsorption(player);
+			player.removeMetadata("mtn", Core.getCore());
 		}
 		ConfigStore.confirmBlockConfig();
 		ConfigStore.confirmPortals();

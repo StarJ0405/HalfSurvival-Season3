@@ -127,6 +127,7 @@ public class PlayerListener implements Listener {
 			}
 		}
 		Skill.Hunting.setMaxAbsorption(player);
+		player.removeMetadata("mtn", Core.getCore());
 	}
 
 	@EventHandler
