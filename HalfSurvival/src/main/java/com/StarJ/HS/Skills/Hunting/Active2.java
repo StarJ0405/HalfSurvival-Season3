@@ -2,6 +2,7 @@ package com.StarJ.HS.Skills.Hunting;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -74,6 +75,8 @@ public class Active2 extends UsableSkill {
 
 		@Override
 		public void run() {
+			if (this.time == 0)
+				att.playSound(att, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 2f, 0.5f);
 			this.time++;
 			this.loc.add(this.dir);
 			for (Vector mod : longSword) {
@@ -119,76 +122,92 @@ public class Active2 extends UsableSkill {
 			HashMapStore.setDelay(player);
 			ItemStack off = player.getInventory().getItemInOffHand();
 			WeaponType type = WeaponType.getWeaponType(off);
+			boolean upgrade_left2_2 = HashMapStore.isAngryStatus(player)
+					&& Skill.Hunting.upgrade_left2_2.confirmChance(player);
 			switch (type) {
 			case LongSword: {
-				player.playSound(player, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 2f, 0.5f);
 				Location loc = player.getEyeLocation();
 				Vector dir = loc.getDirection();
 				new swordArrow(3 * 20, dir, loc, player).runTaskTimer(Core.getCore(), 0, 1);
+				if (upgrade_left2_2)
+					new swordArrow(3 * 20, dir, loc.clone().subtract(0, 0.5, 0), player).runTaskTimer(Core.getCore(), 5,
+							1);
 			}
 				break;
 			case ShortSword: {
-				ItemDisplay itemDisplay = HashMapStore.getActive2(player);
-				if (itemDisplay != null) {
-					if (itemDisplay.getVehicle() != null) {
-						Entity vehicle = itemDisplay.getVehicle();
-						if (vehicle instanceof Arrow)
-							vehicle.remove();
-					}
-					Location start = itemDisplay.getLocation();
-					Location end = player.getEyeLocation();
-					Vector dir = end.clone().subtract(start).toVector().normalize();
-					List<LivingEntity> list = new ArrayList<LivingEntity>();
-					for (int i = 0; i < end.distance(start); i++) {
-						Location now = start.clone().add(dir.clone().multiply(i));
-						now.getWorld().spawnParticle(Particle.ELECTRIC_SPARK, now, 5, 0.1, 0.1, 0.1, 0);
-						now.getWorld().playSound(now, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1f, 1f);
-						for (Entity et : now.getWorld().getNearbyEntities(now, 0.75, 0.75, 0.75))
-							if (et instanceof LivingEntity) {
-								LivingEntity livingEntity = (LivingEntity) et;
-								if (!list.contains(livingEntity) && !(et instanceof Player)) {
-									list.add(livingEntity);
-									damage(player, livingEntity, 5d);
-								}
+				ItemDisplay[] itemDisplays = HashMapStore.getActive2(player);
+				if (itemDisplays != null)
+					for (ItemDisplay itemDisplay : itemDisplays)
+						if (itemDisplay != null) {
+							if (itemDisplay.getVehicle() != null) {
+								Entity vehicle = itemDisplay.getVehicle();
+								if (vehicle instanceof Arrow)
+									vehicle.remove();
 							}
-					}
-					itemDisplay.remove();
-				}
+							Location start = itemDisplay.getLocation();
+							Location end = player.getEyeLocation();
+							Vector dir = end.clone().subtract(start).toVector().normalize();
+							List<LivingEntity> list = new ArrayList<LivingEntity>();
+							for (int i = 0; i < end.distance(start); i++) {
+								Location now = start.clone().add(dir.clone().multiply(i));
+								now.getWorld().spawnParticle(Particle.ELECTRIC_SPARK, now, 5, 0.1, 0.1, 0.1, 0);
+								now.getWorld().playSound(now, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1f, 1f);
+								for (Entity et : now.getWorld().getNearbyEntities(now, 0.75, 0.75, 0.75))
+									if (et instanceof LivingEntity) {
+										LivingEntity livingEntity = (LivingEntity) et;
+										if (!list.contains(livingEntity) && !(et instanceof Player)) {
+											list.add(livingEntity);
+											damage(player, livingEntity, 5d);
+										}
+									}
+							}
+							itemDisplay.remove();
+						}
 			}
 				break;
 			case Bow: {
-				ItemDisplay itemDisplay = HashMapStore.getActive2(player);
-				if (itemDisplay != null) {
-					if (itemDisplay.getVehicle() != null) {
-						Entity vehicle = itemDisplay.getVehicle();
-						if (vehicle instanceof Arrow)
-							vehicle.remove();
-					}
-					Location loc = itemDisplay.getLocation();
-					for (int i = 0; i < 10; i++) {
-						Arrow arrow = loc.getWorld().spawnArrow(loc, new Vector(0, 1, 0), 0.5f, 4);
-						arrow.setShooter(player);
-						arrow.setPickupStatus(PickupStatus.DISALLOWED);
-						arrow.setMetadata("no_player", new FixedMetadataValue(Core.getCore(), true));
-						arrow.setMetadata("no_delay", new FixedMetadataValue(Core.getCore(), true));
-						Bukkit.getPluginManager()
-								.callEvent(new EntityShootBowEvent(player, off, new ItemStack(Material.ARROW), arrow,
-										EquipmentSlot.OFF_HAND, (float) arrow.getVelocity().length(), false));
-					}
-					itemDisplay.remove();
-				}
+				ItemDisplay[] itemDisplays = HashMapStore.getActive2(player);
+				if (itemDisplays != null)
+					for (ItemDisplay itemDisplay : itemDisplays)
+						if (itemDisplay != null) {
+							if (itemDisplay.getVehicle() != null) {
+								Entity vehicle = itemDisplay.getVehicle();
+								if (vehicle instanceof Arrow)
+									vehicle.remove();
+							}
+							Location loc = itemDisplay.getLocation();
+							for (int i = 0; i < 10; i++) {
+								Arrow arrow = loc.getWorld().spawnArrow(loc, new Vector(0, 1, 0), 0.5f, 4);
+								arrow.setShooter(player);
+								arrow.setPickupStatus(PickupStatus.DISALLOWED);
+								arrow.setMetadata("no_player", new FixedMetadataValue(Core.getCore(), true));
+								arrow.setMetadata("no_delay", new FixedMetadataValue(Core.getCore(), true));
+								Bukkit.getPluginManager()
+										.callEvent(new EntityShootBowEvent(player, off, new ItemStack(Material.ARROW),
+												arrow, EquipmentSlot.OFF_HAND, (float) arrow.getVelocity().length(),
+												false));
+							}
+							itemDisplay.remove();
+						}
 			}
 				break;
 			case Crossbow: {
-				player.removePotionEffect(PotionEffectType.SLOW);
-				player.removePotionEffect(PotionEffectType.JUMP);
-				Arrow arrow = player.launchProjectile(Arrow.class);
-				arrow.setPickupStatus(PickupStatus.DISALLOWED);
-				arrow.setVelocity(arrow.getVelocity().multiply(5));
-				arrow.setMetadata("no_player", new FixedMetadataValue(Core.getCore(), true));
-				arrow.setMetadata("no_delay", new FixedMetadataValue(Core.getCore(), true));
-				Bukkit.getPluginManager().callEvent(new EntityShootBowEvent(player, off, new ItemStack(Material.ARROW),
-						arrow, EquipmentSlot.OFF_HAND, (float) arrow.getVelocity().length(), false));
+				int max = 1;
+				if (upgrade_left2_2)
+					max = 2;
+				for (int i = 0; i < max; i++) {
+					player.removePotionEffect(PotionEffectType.SLOW);
+					player.removePotionEffect(PotionEffectType.JUMP);
+					Arrow arrow = player.getWorld().spawnArrow(player.getEyeLocation(),
+							player.getLocation().getDirection(), 4f, i != 0 ? 7f : 0f);
+					arrow.setPickupStatus(PickupStatus.DISALLOWED);
+					arrow.setVelocity(arrow.getVelocity().multiply(5));
+					arrow.setMetadata("no_player", new FixedMetadataValue(Core.getCore(), true));
+					arrow.setMetadata("no_delay", new FixedMetadataValue(Core.getCore(), true));
+					Bukkit.getPluginManager()
+							.callEvent(new EntityShootBowEvent(player, off, new ItemStack(Material.ARROW), arrow,
+									EquipmentSlot.OFF_HAND, (float) arrow.getVelocity().length(), false));
+				}
 			}
 				break;
 			}
@@ -217,58 +236,122 @@ public class Active2 extends UsableSkill {
 				setDurationTime(player, duration / 1000d);
 				HashMapStore.setDuration(player, this, duration);
 			}
+			boolean upgrade_left2_2 = HashMapStore.isAngryStatus(player)
+					&& Skill.Hunting.upgrade_left2_2.confirmChance(player);
 			switch (type) {
 			case LongSword: {
-				player.playSound(player, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 2f, 0.5f);
 				Location loc = player.getEyeLocation();
 				Vector dir = loc.getDirection();
 				new swordArrow(3 * 20, dir, loc, player).runTaskTimer(Core.getCore(), 0, 1);
+				if (upgrade_left2_2)
+					new swordArrow(3 * 20, dir, loc.clone().subtract(0, 0.5, 0), player).runTaskTimer(Core.getCore(), 5,
+							1);
 			}
 				break;
 			case ShortSword: {
 				player.playSound(player, Sound.ITEM_TRIDENT_THROW, 0.5f, 2f);
-				ItemDisplay itemDisplay = (ItemDisplay) player.getWorld().spawnEntity(player.getEyeLocation(),
-						EntityType.ITEM_DISPLAY);
-				Transformation transformation = itemDisplay.getTransformation();
-				transformation.getLeftRotation().set(Direction.getQuaterniond(player.getLocation().getDirection()));
-				itemDisplay.setTransformation(transformation);
-				itemDisplay.setItemStack(off.clone());
-				Arrow arrow = player.launchProjectile(Arrow.class);
-				arrow.addPassenger(itemDisplay);
-				arrow.setMetadata("remove", new FixedMetadataValue(Core.getCore(), true));
-				arrow.setMetadata("no_player", new FixedMetadataValue(Core.getCore(), true));
-				arrow.setMetadata("no_delay", new FixedMetadataValue(Core.getCore(), true));
-				arrow.setMetadata("movePassenger", new FixedMetadataValue(Core.getCore(), true));
-				arrow.setMetadata("damage", new FixedMetadataValue(Core.getCore(), 0));
-				Bukkit.getScheduler().runTaskLater(Core.getCore(), () -> {
-					if (itemDisplay != null)
-						itemDisplay.remove();
-					if (arrow != null)
-						arrow.remove();
-				}, getDuration(player) * 20 / 1000 + 2);
-				HashMapStore.setActive2(player, itemDisplay);
+				if (upgrade_left2_2) {
+					ItemDisplay[] itemDisplays = new ItemDisplay[2];
+					for (int i = 0; i < itemDisplays.length; i++) {
+						ItemDisplay itemDisplay = (ItemDisplay) player.getWorld().spawnEntity(player.getEyeLocation(),
+								EntityType.ITEM_DISPLAY);
+						Transformation transformation = itemDisplay.getTransformation();
+						transformation.getLeftRotation()
+								.set(Direction.getQuaterniond(player.getLocation().getDirection()));
+						itemDisplay.setTransformation(transformation);
+						itemDisplay.setItemStack(off.clone());
+
+						Arrow arrow = player.getWorld().spawnArrow(player.getEyeLocation(),
+								player.getLocation().getDirection(), 4f, i != 0 ? 15f : 0f);
+						arrow.addPassenger(itemDisplay);
+						arrow.setMetadata("remove", new FixedMetadataValue(Core.getCore(), true));
+						arrow.setMetadata("no_player", new FixedMetadataValue(Core.getCore(), true));
+						arrow.setMetadata("no_delay", new FixedMetadataValue(Core.getCore(), true));
+						arrow.setMetadata("movePassenger", new FixedMetadataValue(Core.getCore(), true));
+						arrow.setMetadata("damage", new FixedMetadataValue(Core.getCore(), 0));
+						itemDisplays[i] = itemDisplay;
+						Bukkit.getScheduler().runTaskLater(Core.getCore(), () -> {
+							if (itemDisplay != null)
+								itemDisplay.remove();
+							if (arrow != null)
+								arrow.remove();
+						}, getDuration(player) * 20 / 1000 + 2);
+					}
+					HashMapStore.setActive2(player, itemDisplays);
+				} else {
+					ItemDisplay itemDisplay = (ItemDisplay) player.getWorld().spawnEntity(player.getEyeLocation(),
+							EntityType.ITEM_DISPLAY);
+					Transformation transformation = itemDisplay.getTransformation();
+					transformation.getLeftRotation().set(Direction.getQuaterniond(player.getLocation().getDirection()));
+					itemDisplay.setTransformation(transformation);
+					itemDisplay.setItemStack(off.clone());
+					Arrow arrow = player.launchProjectile(Arrow.class);
+					arrow.addPassenger(itemDisplay);
+					arrow.setMetadata("remove", new FixedMetadataValue(Core.getCore(), true));
+					arrow.setMetadata("no_player", new FixedMetadataValue(Core.getCore(), true));
+					arrow.setMetadata("no_delay", new FixedMetadataValue(Core.getCore(), true));
+					arrow.setMetadata("movePassenger", new FixedMetadataValue(Core.getCore(), true));
+					arrow.setMetadata("damage", new FixedMetadataValue(Core.getCore(), 0));
+					Bukkit.getScheduler().runTaskLater(Core.getCore(), () -> {
+						if (itemDisplay != null)
+							itemDisplay.remove();
+						if (arrow != null)
+							arrow.remove();
+					}, getDuration(player) * 20 / 1000 + 2);
+					HashMapStore.setActive2(player, new ItemDisplay[] { itemDisplay });
+				}
 			}
 				break;
 			case Bow: {
-				ItemDisplay itemDisplay = (ItemDisplay) player.getWorld().spawnEntity(player.getEyeLocation(),
-						EntityType.ITEM_DISPLAY);
-				Transformation transformation = itemDisplay.getTransformation();
-				transformation.getLeftRotation().set(Direction.getQuaterniond(player.getLocation().getDirection()));
-				itemDisplay.setTransformation(transformation);
-				itemDisplay.setItemStack(new ItemStack(Material.ARROW, 64));
-				Arrow arrow = player.launchProjectile(Arrow.class);
-				arrow.addPassenger(itemDisplay);
-				arrow.setPickupStatus(PickupStatus.DISALLOWED);
-				arrow.setMetadata("no_player", new FixedMetadataValue(Core.getCore(), true));
-				arrow.setMetadata("no_remove", new FixedMetadataValue(Core.getCore(), true));
-				arrow.setMetadata("active2", new FixedMetadataValue(Core.getCore(), true));
-				Bukkit.getScheduler().runTaskLater(Core.getCore(), () -> {
-					if (itemDisplay != null)
-						itemDisplay.remove();
-					if (arrow != null)
-						arrow.remove();
-				}, getDuration(player) * 20 / 1000 + 2);
-				HashMapStore.setActive2(player, itemDisplay);
+				if (upgrade_left2_2) {
+					ItemDisplay[] itemDisplays = new ItemDisplay[2];
+					for (int i = 0; i < itemDisplays.length; i++) {
+						ItemDisplay itemDisplay = (ItemDisplay) player.getWorld().spawnEntity(player.getEyeLocation(),
+								EntityType.ITEM_DISPLAY);
+						Transformation transformation = itemDisplay.getTransformation();
+						transformation.getLeftRotation()
+								.set(Direction.getQuaterniond(player.getLocation().getDirection()));
+						itemDisplay.setTransformation(transformation);
+						itemDisplay.setItemStack(new ItemStack(Material.ARROW, 64));
+						Arrow arrow = player.getWorld().spawnArrow(player.getEyeLocation(),
+								player.getLocation().getDirection(), 4f, i != 0 ? 7f : 0f);
+						arrow.addPassenger(itemDisplay);
+						arrow.setPickupStatus(PickupStatus.DISALLOWED);
+						arrow.setMetadata("no_player", new FixedMetadataValue(Core.getCore(), true));
+						arrow.setMetadata("no_remove", new FixedMetadataValue(Core.getCore(), true));
+						arrow.setMetadata("active2", new FixedMetadataValue(Core.getCore(), true));
+						itemDisplays[i] = itemDisplay;
+						if (i != 0)
+							arrow.getVelocity().add(getRandomVelocity(0.5d));
+						Bukkit.getScheduler().runTaskLater(Core.getCore(), () -> {
+							if (itemDisplay != null)
+								itemDisplay.remove();
+							if (arrow != null)
+								arrow.remove();
+						}, getDuration(player) * 20 / 1000 + 2);
+					}
+					HashMapStore.setActive2(player, itemDisplays);
+				} else {
+					ItemDisplay itemDisplay = (ItemDisplay) player.getWorld().spawnEntity(player.getEyeLocation(),
+							EntityType.ITEM_DISPLAY);
+					Transformation transformation = itemDisplay.getTransformation();
+					transformation.getLeftRotation().set(Direction.getQuaterniond(player.getLocation().getDirection()));
+					itemDisplay.setTransformation(transformation);
+					itemDisplay.setItemStack(new ItemStack(Material.ARROW, 64));
+					Arrow arrow = player.launchProjectile(Arrow.class);
+					arrow.addPassenger(itemDisplay);
+					arrow.setPickupStatus(PickupStatus.DISALLOWED);
+					arrow.setMetadata("no_player", new FixedMetadataValue(Core.getCore(), true));
+					arrow.setMetadata("no_remove", new FixedMetadataValue(Core.getCore(), true));
+					arrow.setMetadata("active2", new FixedMetadataValue(Core.getCore(), true));
+					Bukkit.getScheduler().runTaskLater(Core.getCore(), () -> {
+						if (itemDisplay != null)
+							itemDisplay.remove();
+						if (arrow != null)
+							arrow.remove();
+					}, getDuration(player) * 20 / 1000 + 2);
+					HashMapStore.setActive2(player, new ItemDisplay[] { itemDisplay });
+				}
 			}
 				break;
 			case Crossbow: {
@@ -280,6 +363,12 @@ public class Active2 extends UsableSkill {
 			}
 		}
 		return true;
+	}
+
+	public Vector getRandomVelocity(double power) {
+		Random r = new Random();
+		return new Vector(-0.5 + r.nextDouble(), -0.5 + r.nextDouble(), -0.5 + r.nextDouble()).normalize()
+				.multiply(power);
 	}
 
 	public enum Direction {

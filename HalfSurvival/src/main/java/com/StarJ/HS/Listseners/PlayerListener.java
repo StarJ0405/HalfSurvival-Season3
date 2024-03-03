@@ -1273,7 +1273,7 @@ public class PlayerListener implements Listener {
 							for (int i = 0; i < 3; i++) {
 								player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ARROW_SHOOT, 1f, 1f);
 								Arrow arrow = etPro.getWorld().spawnArrow(etPro.getLocation(),
-										etPro.getVelocity().clone(), power, 8);
+										etPro.getVelocity().clone(), power, 10);
 								arrow.setMetadata("damage",
 										new FixedMetadataValue(Core.getCore(), bowitem.getDamage()));
 								arrow.setMetadata("no_player", new FixedMetadataValue(Core.getCore(), true));

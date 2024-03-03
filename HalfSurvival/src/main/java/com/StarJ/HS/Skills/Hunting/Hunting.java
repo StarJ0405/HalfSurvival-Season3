@@ -34,7 +34,7 @@ public class Hunting {
 	//
 	public final Active2 active2 = new Active2("hunting_active2", "연계기", new Skill[] { upgrade1 }, 3, 1.5,
 			useSlot.right);
-	public final Active3 active3 = new Active3("hunting_active3", "기본기", new Skill[] { upgrade1 }, 1,
+	public final Active3 active3 = new Active3("hunting_active3", "기본기", new Skill[] { upgrade1 }, 3,
 			useSlot.shiftRight);
 	public final Active4 active4 = new Active4("hunting_active4", "강화기", new Skill[] { upgrade1 }, 1, 100,
 			useSlot.shiftLeft);
@@ -77,9 +77,9 @@ public class Hunting {
 			new Skill[0], new String[0], new double[] { 1d, 0.25d }, new double[] { 1 });
 	//
 	public final Skill passive_left1 = new Skill(SkillType.hunting, "hunting_passive_left1", Type.Passive, "잦은 분노",
-			new String[] { ChatColor.WHITE + "공격시 20% 확률로 분노를 1스택 증가시킵니다." },
+			new String[] { ChatColor.WHITE + "공격시 5% 확률로 분노를 1스택 증가시킵니다." },
 			new String[] { SkillType.hunting.leftSkillType }, new Skill[] { upgrade_left2_1 }, new Need[0],
-			new Skill[0], new String[] { "passive_middle1", "passive_right1" }, new double[] { 0.2d });
+			new Skill[0], new String[] { "passive_middle1", "passive_right1" }, new double[] { 0.05d });
 	public final Skill passive_middle1 = new Skill(SkillType.hunting, "hunting_passive_middle1", Type.Passive, "환경 저항",
 			new String[] { ChatColor.WHITE + "블럭 파괴시 25% 확률로 2분동안 야간투시와 전달체의 힘 및 화염저항을 얻습니다." },
 			new String[] { SkillType.hunting.middleSkillType }, new Skill[] { upgrade_middle3_1 }, new Need[0],
@@ -103,11 +103,10 @@ public class Hunting {
 			new String[] { SkillType.hunting.rightSkillType }, new Skill[] { upgrade_right4_1 }, new Need[0],
 			new Skill[0], new String[0], new double[] { 0.1d });
 	//
-	public final Skill transform_left3 = new Skill(SkillType.hunting, "hunting_transform_left3", Type.Transform,
-			"발굴 탐색",
-			new String[] { ChatColor.WHITE + "25% 확률로 탐색한 광물 캡니다.", ChatColor.WHITE + "아이템은 해당 자리에 떨어지므로 잘 찾아주세요!" },
+	public final Skill transform_left3 = new Skill(SkillType.hunting, "hunting_transform_left3", Type.Transform, "짜증",
+			new String[] { active3.getDisplayName() + ChatColor.WHITE + " 발동시 40% 확률로 분노가 1스택 쌓입니다." },
 			new String[] { SkillType.hunting.leftSkillType }, new Skill[] { passive_left2 }, new Need[0],
-			new Skill[] { active3 }, new String[0], new double[] { 0.25d });
+			new Skill[] { active3 }, new String[0], new double[] { 0.4d });
 	public final Skill transform_middle4 = new Skill(SkillType.hunting, "hunting_transform_middle4", Type.Transform,
 			"친구 찾기",
 			new String[] {
@@ -123,12 +122,11 @@ public class Hunting {
 			new String[] { SkillType.hunting.rightSkillType }, new Skill[] { passive_right2 }, new Need[0],
 			new Skill[] { active2 }, new String[0], new double[] { 0.25d });
 	//
-	public final Skill upgrade_left3 = new Skill(SkillType.hunting, "hunting_upgrade_left3", Type.Upgrade, "뛰어난 탐색",
-			new String[] { ChatColor.WHITE + "광물 발굴시 25% 확률로 " + active3.getDisplayName() + ChatColor.WHITE
-					+ "의 재사용대기시간이 25% 감소합니다." },
+	public final Skill upgrade_left3 = new Skill(SkillType.hunting, "hunting_upgrade_left3", Type.Upgrade, "노련한 기본기",
+			new String[] { active3.getDisplayName() + ChatColor.WHITE + " 발동시 25% 확률로 재사용대기시간이 초기화됩니다." },
 			new String[] { SkillType.hunting.leftSkillType, SkillType.hunting.middleSkillType },
 			new Skill[] { transform_left3, transform_middle4 }, new Need[0], new Skill[0], new String[0],
-			new double[] { 0.25d }, new double[] { 0.25d });
+			new double[] { 0.25d });
 	public final Skill upgrade_middle4 = new Skill(SkillType.hunting, "hunting_upgrade_middle4", Type.Upgrade, "인싸 광물",
 			new String[] {
 					active4.getDisplayName() + ChatColor.WHITE + "으로 생성된 광물의 최대 추가 드랍 횟수가 발동시 발견한 광물 수 만큼 증가합니다.",
@@ -143,8 +141,8 @@ public class Hunting {
 			new Skill[] { transform_right2, transform_left3 }, new Need[0], new Skill[0], new String[0], new double[0],
 			new double[] { 3 });
 	//
-	public final Skill passive_left3 = new Skill(SkillType.hunting, "hunting_passive_left3", Type.Passive, "빈틈 포착",
-			new String[] { ChatColor.WHITE + "관련 블럭 좌클릭시 5% 확률로 블럭을 파괴합니다." },
+	public final Skill passive_left3 = new Skill(SkillType.hunting, "hunting_passive_left3", Type.Passive, "분노 교환",
+			new String[] { ChatColor.WHITE + "분노 미발동시 10% 확률로 분노 스택 퍼센트 만큼 더 피해가 증가합니다." },
 			new String[] { SkillType.hunting.leftSkillType }, new Skill[] { transform_left3 }, new Need[0],
 			new Skill[0], new String[0], new double[] { 0.05d });
 	public final Skill passive_middle3 = new Skill(SkillType.hunting, "hunting_passive_middle3", Type.Passive, "다우징",
@@ -158,8 +156,9 @@ public class Hunting {
 			new Skill[0], new String[0], new double[] { 0.2d }, new double[] { 1, 1 });
 
 	//
-	public final Skill upgrade_left2_2 = new Skill(SkillType.hunting, "hunting_upgrade_left2_2", Type.Upgrade,
-			"또 하나의 곡괭이", new String[] { active2.getDisplayName() + ChatColor.WHITE + " 사용시의 내구도 소모를 없애준다." },
+	public final Skill upgrade_left2_2 = new Skill(SkillType.hunting, "hunting_upgrade_left2_2", Type.Upgrade, "분노 폭발",
+			new String[] {
+					ChatColor.WHITE + "분노 모드에서 " + active2.getDisplayName() + ChatColor.WHITE + " 사용시 연계기가 강화됩니다." },
 			new String[] { SkillType.hunting.leftSkillType }, new Skill[] { passive_left3 }, new Need[0], new Skill[0],
 			new String[0]);
 	public final Skill transform_left1 = new Skill(SkillType.hunting, "hunting_transform_left1", Type.Transform,

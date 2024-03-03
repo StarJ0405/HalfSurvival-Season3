@@ -13,13 +13,14 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.AbstractArrow.PickupStatus;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
 import com.StarJ.HS.Core;
-import com.StarJ.HS.Systems.ConfigStore;
 
 public class moveToNeturalCommand implements CommandExecutor, TabCompleter {
 
@@ -29,6 +30,12 @@ public class moveToNeturalCommand implements CommandExecutor, TabCompleter {
 			BlockCommandSender blockCommandSender = (BlockCommandSender) sender;
 			// + + -
 			Location loc = blockCommandSender.getBlock().getLocation().clone().add(0.5, 3, 0.5);
+			for (Entity et : loc.getBlock().getWorld().getNearbyEntities(loc, 1, 3, 1))
+				if (et instanceof Arrow) {
+					Arrow arrow = (Arrow) et;
+					if (!arrow.getPickupStatus().equals(PickupStatus.ALLOWED))
+						arrow.remove();
+				}
 			Player player = getNearstPlayer(loc);
 			if (player != null && player.isOnline())
 				player.setMetadata("mtn", new FixedMetadataValue(Core.getCore(), true));
@@ -71,7 +78,8 @@ public class moveToNeturalCommand implements CommandExecutor, TabCompleter {
 											Sound.BLOCK_PORTAL_TRIGGER, 0.5f, 3f);
 									Bukkit.getScheduler().runTaskLater(Core.getCore(), () -> {
 										if (player != null && player.isOnline())
-											player.teleport(ConfigStore.getRandomLocation());
+											player.teleport(player.getWorld().getSpawnLocation());
+//											player.teleport(ConfigStore.getRandomLocation());
 									}, 5);
 								}
 							}, 2);
@@ -89,6 +97,7 @@ public class moveToNeturalCommand implements CommandExecutor, TabCompleter {
 		for (Entity et : loc.getBlock().getWorld().getNearbyEntities(loc, 1, 3, 1))
 			if (et instanceof Player && !et.hasMetadata("mtn"))
 				return (Player) et;
+
 		return null;
 	}
 

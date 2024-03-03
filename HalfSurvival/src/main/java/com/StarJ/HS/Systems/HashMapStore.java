@@ -36,7 +36,7 @@ public class HashMapStore {
 	private static HashMap<UUID, FishHook[]> extra_hooks = new HashMap<UUID, FishHook[]>();
 	private static HashMap<UUID, Integer> upgrade_right4_2 = new HashMap<UUID, Integer>();
 	private static HashMap<UUID, LocationTask> change_portal = new HashMap<UUID, LocationTask>();
-	private static HashMap<UUID, ItemDisplay> active2 = new HashMap<UUID, ItemDisplay>();
+	private static HashMap<UUID, ItemDisplay[]> active2 = new HashMap<UUID, ItemDisplay[]>();
 	private static HashMap<UUID, BukkitTask> active4 = new HashMap<UUID, BukkitTask>();
 	private static HashMap<UUID, BukkitTask> angryStatus = new HashMap<UUID, BukkitTask>();
 
@@ -335,24 +335,37 @@ public class HashMapStore {
 	}
 
 	// active2
-	public static ItemDisplay getActive2(Player player) {
+	public static ItemDisplay[] getActive2(Player player) {
 		UUID uuid = player.getUniqueId();
 		if (active2.containsKey(uuid)) {
-			ItemDisplay display = active2.get(uuid);
-			if (!display.isDead())
-				return display;
+			ItemDisplay[] displays = active2.get(uuid);
+			for (int i = 0; i < displays.length; i++) {
+				ItemDisplay display = displays[i];
+				if (display == null || display.isDead())
+					displays[i] = null;
+			}
+			if (displays.length == 1 && displays[0] != null)
+				return displays;
+			else if (displays.length == 2)
+				if (displays[0] != null && displays[1] != null)
+					return displays;
+				else if (displays[0] != null)
+					return new ItemDisplay[] { displays[0] };
+				else if (displays[1] != null)
+					return new ItemDisplay[] { displays[1] };
 		}
 		return null;
 	}
 
-	public static void setActive2(Player player, ItemDisplay itemDisplay) {
+	public static void setActive2(Player player, ItemDisplay[] itemDisplays) {
 		UUID uuid = player.getUniqueId();
 		if (active2.containsKey(uuid)) {
-			ItemDisplay display = active2.get(uuid);
-			if (!display.isDead())
-				display.remove();
+			ItemDisplay[] displays = active2.get(uuid);
+			for (ItemDisplay display : displays)
+				if (display != null && !display.isDead())
+					display.remove();
 		}
-		active2.put(uuid, itemDisplay);
+		active2.put(uuid, itemDisplays);
 	}
 
 	// active4

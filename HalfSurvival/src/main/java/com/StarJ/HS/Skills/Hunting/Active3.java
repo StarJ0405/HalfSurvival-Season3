@@ -5,9 +5,11 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
+import org.bukkit.Particle.DustOptions;
 import org.bukkit.Sound;
 import org.bukkit.entity.AbstractArrow.PickupStatus;
 import org.bukkit.entity.Arrow;
@@ -47,17 +49,31 @@ public class Active3 extends UsableSkill {
 	@Override
 	public boolean use(Player player) {
 		if (super.use(player)) {
+			if (Skill.Hunting.upgrade_left3.confirmChance(player)) {
+				setLastUseTime(player, 0);
+				HashMapStore.setCooldown(player, this, 0);
+				HashMapStore.sendCooldownMessage(player, this);
+				player.sendMessage(Skill.Hunting.upgrade_left3.getDisplayName() + ChatColor.WHITE + " 발동");
+			}
 			ItemStack off = player.getInventory().getItemInOffHand();
 			WeaponType type = WeaponType.getWeaponType(off);
-			long duration = getDuration(player);
-			if (duration > 0) {
-				setDurationTime(player, duration / 1000d);
-				HashMapStore.setDuration(player, this, duration);
+			if (!HashMapStore.isAngryStatus(player) && Skill.Hunting.transform_left3.confirmChance(player)) {
+				int angry = Skill.Hunting.getAngry(player);
+				int max = Skill.Hunting.getMaxAngry(player);
+				angry += 1;
+				if (angry > max)
+					angry = max;
+				Skill.Hunting.setAngry(player, angry);
+				player.sendMessage(Skill.Hunting.transform_left3.getDisplayName() + ChatColor.WHITE + " 발동 "
+						+ ChatColor.RED + angry + " / " + max);
+				player.playSound(player, Sound.ENTITY_PLAYER_HURT_ON_FIRE, 2f, 2f);
+				player.spawnParticle(Particle.REDSTONE, player.getEyeLocation(), 10, 0.5, 0.5, 0.5,
+						new DustOptions(Color.RED, 1));
 			}
 			switch (type) {
 			case LongSword: {
 				Bukkit.getScheduler().runTaskLater(Core.getCore(), () -> {
-					player.getWorld().playSound(player.getEyeLocation(), Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1f,2f);
+					player.getWorld().playSound(player.getEyeLocation(), Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1f, 2f);
 					Location loc = player.getEyeLocation().clone().subtract(0, 0.25d, 0);
 					Vector dir = loc.getDirection();
 					List<LivingEntity> list = new ArrayList<LivingEntity>();
@@ -82,7 +98,7 @@ public class Active3 extends UsableSkill {
 							}
 						}
 				}, 10);
-				player.getWorld().playSound(player.getEyeLocation(), Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1f,2f);
+				player.getWorld().playSound(player.getEyeLocation(), Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1f, 2f);
 				Location loc = player.getEyeLocation().clone().subtract(0, 0.25d, 0);
 				Vector dir = loc.getDirection();
 				List<LivingEntity> list = new ArrayList<LivingEntity>();
@@ -110,7 +126,7 @@ public class Active3 extends UsableSkill {
 				break;
 			case ShortSword: {
 				Bukkit.getScheduler().runTaskLater(Core.getCore(), () -> {
-					player.getWorld().playSound(player.getEyeLocation(), Sound.ENTITY_PLAYER_ATTACK_CRIT, 1f,1f);
+					player.getWorld().playSound(player.getEyeLocation(), Sound.ENTITY_PLAYER_ATTACK_CRIT, 1f, 1f);
 					Location loc = player.getEyeLocation().clone().subtract(0, 0.25d, 0);
 					Vector dir = loc.getDirection();
 					List<LivingEntity> list = new ArrayList<LivingEntity>();
@@ -135,7 +151,7 @@ public class Active3 extends UsableSkill {
 							}
 						}
 				}, 7);
-				player.getWorld().playSound(player.getEyeLocation(), Sound.ENTITY_PLAYER_ATTACK_CRIT, 1f,1f);
+				player.getWorld().playSound(player.getEyeLocation(), Sound.ENTITY_PLAYER_ATTACK_CRIT, 1f, 1f);
 				Location loc = player.getEyeLocation().clone().subtract(0, 0.25d, 0);
 				Vector dir = loc.getDirection();
 				List<LivingEntity> list = new ArrayList<LivingEntity>();

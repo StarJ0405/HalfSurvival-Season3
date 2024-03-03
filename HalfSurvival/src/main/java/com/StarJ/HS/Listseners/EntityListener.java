@@ -159,21 +159,20 @@ public class EntityListener implements Listener {
 	public void Events(EntityDamageByEntityEvent e) {
 		Entity etAtt = e.getDamager();
 		Entity etVic = e.getEntity();
-		if (etAtt instanceof Player) {
-			Player att = (Player) etAtt;
-			ItemStack[] contents = att.getInventory().getContents();
-			for (int i = 0; i < contents.length; i++) {
-				ItemStack item = contents[i];
-				if (item != null && item.hasItemMeta() && item.getItemMeta().hasEnchants()) {
-					ItemMeta meta = item.getItemMeta();
-					meta.removeEnchantments();
-					item.setItemMeta(meta);
-					contents[i] = item;
-				}
-			}
+		if (etAtt instanceof Projectile) {
+			if (etAtt.hasMetadata("damage"))
+				for (MetadataValue value : etAtt.getMetadata("damage"))
+					if (value.getOwningPlugin().equals(Core.getCore())) {
+						e.setDamage(value.asDouble());
+						break;
+					}
+		}
+		if (etAtt instanceof Player
+				|| (etAtt instanceof Projectile) && ((Projectile) etAtt).getShooter() instanceof Player) {
+			Player att = etAtt instanceof Player ? (Player) etAtt : (Player) ((Projectile) etAtt).getShooter();
 			int max = Skill.Hunting.getMaxAngry(att);
+			int angry = Skill.Hunting.getAngry(att);
 			if (max > 0) {
-				int angry = Skill.Hunting.getAngry(att);
 				if (!HashMapStore.isAngryStatus(att) && Skill.Hunting.passive_left1.confirmChance(att)) {
 					angry += 1;
 					att.sendMessage(Skill.Hunting.passive_left1.getDisplayName() + ChatColor.WHITE + " 발동 "
@@ -188,8 +187,10 @@ public class EntityListener implements Listener {
 				}
 				if (angry == max) {
 					if (Skill.Hunting.passive_left2.confirmChance(att)) {
-						Skill.Hunting.setAngry(att, (int) (max * Skill.Hunting.passive_left2.getEffect()));
-						att.sendMessage(Skill.Hunting.passive_left2.getDisplayName() + ChatColor.WHITE + " 발동");
+						angry = (int) (max * Skill.Hunting.passive_left2.getEffect());
+						Skill.Hunting.setAngry(att, angry);
+						att.sendMessage(Skill.Hunting.passive_left2.getDisplayName() + ChatColor.WHITE + " 발동 "
+								+ ChatColor.RED + angry + " / " + max);
 					} else
 						Skill.Hunting.setAngry(att, 0);
 					HashMapStore.setAngryStatus(att);
@@ -197,6 +198,25 @@ public class EntityListener implements Listener {
 			}
 			if (HashMapStore.isAngryStatus(att))
 				e.setDamage(e.getDamage() * Skill.Hunting.getAngryMultiply(att));
+			else if (max != 0 && angry > 0 && Skill.Hunting.passive_left3.confirmChance(att)) {
+				double power = angry * 1d / max;
+				att.sendMessage(Skill.Hunting.passive_left3.getDisplayName() + ChatColor.WHITE + " 발동 "
+						+ ChatColor.GREEN + "+" + String.format("%.0f", power * 100) + "%");
+				e.setDamage(e.getDamage() * (1d + power));
+			}
+		}
+		if (etAtt instanceof Player) {
+			Player att = (Player) etAtt;
+			ItemStack[] contents = att.getInventory().getContents();
+			for (int i = 0; i < contents.length; i++) {
+				ItemStack item = contents[i];
+				if (item != null && item.hasItemMeta() && item.getItemMeta().hasEnchants()) {
+					ItemMeta meta = item.getItemMeta();
+					meta.removeEnchantments();
+					item.setItemMeta(meta);
+					contents[i] = item;
+				}
+			}
 			if (e.getCause().equals(DamageCause.ENTITY_ATTACK) && etVic instanceof LivingEntity
 					&& !HashMapStore.isActive4Delay(att) && Skill.Hunting.active4.hasDuration(att)) {
 				ItemStack weapon = att.getInventory().getItemInMainHand();
@@ -209,8 +229,8 @@ public class EntityListener implements Listener {
 					switch (weaponType) {
 					case LongSword: {
 						Location loc = ((LivingEntity) etVic).getEyeLocation();
+						HashMapStore.setActive4Delay(att);
 						Bukkit.getScheduler().runTaskLater(Core.getCore(), () -> {
-							HashMapStore.setActive4Delay(att);
 							loc.getWorld().spawnParticle(Particle.SWEEP_ATTACK, loc, 20, 1.5, 1.5, 1.5);
 							for (Entity et : loc.getWorld().getNearbyEntities(loc, 4, 2, 4))
 								if (et instanceof LivingEntity && !(et instanceof Player)) {
@@ -225,8 +245,8 @@ public class EntityListener implements Listener {
 						break;
 					case ShortSword: {
 						Location loc = ((LivingEntity) etVic).getEyeLocation();
+						HashMapStore.setActive4Delay(att);
 						Bukkit.getScheduler().runTaskLater(Core.getCore(), () -> {
-							HashMapStore.setActive4Delay(att);
 							boolean back = true;
 							for (Entity et : loc.getWorld().getNearbyEntities(loc, 4, 2, 4))
 								if (et != etVic && et instanceof LivingEntity && !(et instanceof Player)) {
@@ -268,14 +288,6 @@ public class EntityListener implements Listener {
 					}
 			}
 			att.getInventory().setContents(contents);
-		} else if (etAtt instanceof Projectile) {
-			if (etAtt.hasMetadata("damage"))
-				for (MetadataValue value : etAtt.getMetadata("damage"))
-					if (value.getOwningPlugin().equals(Core.getCore())) {
-						e.setDamage(value.asDouble());
-						break;
-					}
-
 		}
 		if (e.getEntity() instanceof ItemFrame) {
 			if (etAtt instanceof Player) {
