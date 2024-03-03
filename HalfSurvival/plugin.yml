@@ -1,0 +1,48 @@
+name: HalfSurvival
+version: 3.0.1
+description: Made by StarJ
+main: com.StarJ.HS.Core
+api-version: 1.20
+
+commands:
+  mypet:
+    description: "펫 GUI 명령어"
+    usage : "/mypet"
+    aliases: [mp,펫,vpt]
+  home:
+    description: "이동 명령어"
+    usage : "/home - 스폰으로 이동 \n/home bed - 침대로 이동"
+    aliases: [h]
+    operator : admin
+  exp:
+    description: "경험치 명령어"
+    usage : "/exp [player] [skill_type] [amount]"
+    operator : admin
+  spawn:
+    description: "소환 명령어"
+    usage : "/spawn [type] [world] [x] [y] [z]\n/spawn [type] [world] [x] [y] [z] [yaw] [pitch]"
+    aliases: [s]
+    operator : admin
+  sudo:
+    description: "강제로 명령어를 사용게하는 명령어"
+    usage : "/sudo [player] [commands..]"
+    operator : admin
+  item:
+    description: "아이템을 지급하는 명령어"
+    usage : "/i [player] [id] [count]"
+    aliases: [i]
+    operator : admin
+  skill:
+    description: "스킬창 여는 명령어"
+    usage : "/sk"
+    aliases: [sk]
+    operator : admin
+  money:
+    description: "돈 관련 명령어"
+    usage : "/m - 돈 확인 명령어\n/m send [player] [money] - 돈 송신"
+    aliases: [m,ehs,돈]
+  test:
+    description: "for test"
+    usage : "/test"
+    aliases: [t]
+    operator : admin
