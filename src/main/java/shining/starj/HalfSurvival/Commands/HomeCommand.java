@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class HomeCommand implements CommandExecutor, TabCompleter {
 
@@ -17,10 +18,10 @@ public class HomeCommand implements CommandExecutor, TabCompleter {
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
-			if (args.length > 0 && args[0].equals("bed") && player.getBedSpawnLocation() != null)
-				player.teleport(player.getBedSpawnLocation());
+			if (args.length > 0 && args[0].equals("bed") )
+				player.teleport(player.getBedLocation());
 			else if (args.length > 0 && Bukkit.getWorld(args[0]) != null)
-				player.teleport(Bukkit.getWorld(args[0]).getSpawnLocation());
+				player.teleport(Objects.requireNonNull(Bukkit.getWorld(args[0])).getSpawnLocation());
 			else
 				player.teleport(player.getWorld().getSpawnLocation());
 			return true;
@@ -33,10 +34,10 @@ public class HomeCommand implements CommandExecutor, TabCompleter {
 		final List<String> list = new ArrayList<String>();
 		int len = args.length;
 		if (len == 1) {
-			if (args[len - 1].equals("") || "bed".startsWith(args[len - 1].toLowerCase()))
+			if (args[len - 1].isEmpty() || "bed".startsWith(args[len - 1].toLowerCase()))
 				list.add("bed");
 			for (World world : Bukkit.getWorlds())
-				if (args[len - 1].equals("") || world.getName().toLowerCase().startsWith(args[len - 1].toLowerCase()))
+				if (args[len - 1].isEmpty() || world.getName().toLowerCase().startsWith(args[len - 1].toLowerCase()))
 					list.add(world.getName());
 		}
 		return list;
