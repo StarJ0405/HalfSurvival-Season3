@@ -61,8 +61,8 @@ public class DogPet extends Pets {
 
 		@Override
 		public boolean a(DamageSource damagesource, float f) {
-//			if (damagesource.j().a().equalsIgnoreCase("genericKill"))
-//				return super.a(damagesource, f);
+			if (damagesource.j().a().equalsIgnoreCase("genericKill"))
+				return super.a(damagesource, f);
 			return false;
 		}
 

@@ -229,7 +229,7 @@ public enum SkillType {
 		setLevel(player, level);
 		setExp(player, exp);
 		((CraftPlayer) player).spigot().sendMessage(ChatMessageType.ACTION_BAR,
-				TextComponent.fromLegacyText(ChatColor.GOLD + this.displayName + ChatColor.GREEN + "<" + level + ">"
+				TextComponent.fromLegacy(ChatColor.GOLD + this.displayName + ChatColor.GREEN + "<" + level + ">"
 						+ ChatColor.WHITE + " : " + exp + " / " + need + ChatColor.GRAY + " ("
 						+ exp * 10000 / need / 100d + "%)"));
 		player.playSound(player.getEyeLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
