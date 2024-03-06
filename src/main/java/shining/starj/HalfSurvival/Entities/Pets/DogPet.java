@@ -1,7 +1,5 @@
 package shining.starj.HalfSurvival.Entities.Pets;
 
-import shining.starj.HalfSurvival.Systems.GUIs;
-import shining.starj.HalfSurvival.Systems.HashMapStore;
 import net.minecraft.world.EnumHand;
 import net.minecraft.world.EnumInteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
@@ -19,6 +17,8 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Wolf;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
+import shining.starj.HalfSurvival.Systems.GUIs;
+import shining.starj.HalfSurvival.Systems.HashMapStore;
 
 import java.util.Objects;
 import java.util.UUID;
